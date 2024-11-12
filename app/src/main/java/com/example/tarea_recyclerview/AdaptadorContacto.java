@@ -14,31 +14,36 @@ import java.util.ArrayList;
 
 public class AdaptadorContacto extends RecyclerView.Adapter<AdaptadorContacto.ContactoViewHolder> {
 
-    ArrayList<Contacto> coleccion;
+    private ArrayList<Contacto> coleccion;
+    private OnItemClickListener listener;
 
-    public AdaptadorContacto(ArrayList<Contacto> coleccion){
-        this.coleccion=coleccion;
+    public interface OnItemClickListener {
+        void onItemClick(Contacto contacto);
     }
+
+
+    public AdaptadorContacto(ArrayList<Contacto> coleccion, OnItemClickListener listener) {
+        this.coleccion = coleccion;
+        this.listener = listener;
+    }
+
+
 
     @NonNull
     @Override
-    public AdaptadorContacto.ContactoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        AdaptadorContacto.ContactoViewHolder contactoViewHolder=
-                new ContactoViewHolder(
-                        LayoutInflater.from(parent.getContext()).inflate(R.layout.contacto,parent,false)
-                );
-        return contactoViewHolder;
+    public ContactoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflar el layout del item (contacto.xml)
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.contacto, parent, false);
+        return new ContactoViewHolder(view);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull AdaptadorContacto.ContactoViewHolder holder, int position) {
-        Contacto contacto=coleccion.get(position);
-        holder.imageView.setImageResource(contacto.getFoto());
-        holder.nombre.setText(contacto.getNombre());
-        holder.apellidos.setText(contacto.getApellidos());
-        holder.email.setText(contacto.getEmail());
-        holder.telefono.setText(contacto.getTelefono());
 
+
+
+    @Override
+    public void onBindViewHolder(@NonNull ContactoViewHolder holder, int position) {
+        Contacto contacto = coleccion.get(position);
+        holder.bind(contacto, listener);
     }
 
     @Override
@@ -46,12 +51,12 @@ public class AdaptadorContacto extends RecyclerView.Adapter<AdaptadorContacto.Co
         return coleccion.size();
     }
 
-    public class ContactoViewHolder extends RecyclerView.ViewHolder{
-        ImageView imageView;
-        TextView nombre;
-        TextView apellidos;
-        TextView email;
-        TextView telefono;
+
+
+    public static class ContactoViewHolder extends RecyclerView.ViewHolder {
+
+        private ImageView imageView;
+        private TextView nombre, apellidos, email, telefono;
 
         public ContactoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,6 +65,21 @@ public class AdaptadorContacto extends RecyclerView.Adapter<AdaptadorContacto.Co
             apellidos = itemView.findViewById(R.id.apellidos);
             email = itemView.findViewById(R.id.email);
             telefono = itemView.findViewById(R.id.telefono);
+        }
+
+        public void bind(final Contacto contacto, final OnItemClickListener listener) {
+            imageView.setImageResource(contacto.getFoto());
+            nombre.setText(contacto.getNombre());
+            apellidos.setText(contacto.getApellidos());
+            email.setText(contacto.getEmail());
+            telefono.setText(contacto.getTelefono());
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(contacto);
+                }
+            });
         }
     }
 }

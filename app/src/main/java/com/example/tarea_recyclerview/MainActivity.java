@@ -1,6 +1,7 @@
 package com.example.tarea_recyclerview;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,10 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
+    private RecyclerView recyclerView;
+    private AdaptadorContacto adaptador;
+//    private ArrayList<Contacto> contactoArrayList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        recyclerView = findViewById(R.id.listaContactos);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         ArrayList<Contacto> contactoArrayList = new ArrayList<>(Arrays.asList(new Contacto[]{
                 new Contacto(R.drawable.mertin,"Mertin","Gonzalez","tumorcito@gmail.com","611223344"),
@@ -40,13 +48,17 @@ public class MainActivity extends AppCompatActivity {
                 new Contacto(R.drawable.elminster,"Elminster","???","Elminster@gmail.com","611142434")
         }));
 
-        AdaptadorContacto adaptadorContacto = new AdaptadorContacto(contactoArrayList);
 
-        RecyclerView listaContactos = findViewById(R.id.listaContactos);
+        adaptador = new AdaptadorContacto(contactoArrayList, new AdaptadorContacto.OnItemClickListener() {
+            @Override
+            public void onItemClick(Contacto contacto) {
 
-        listaContactos.setLayoutManager(new LinearLayoutManager(this));
+                String mensaje = "Nombre: " + contacto.getNombre() + " Apellido: " + contacto.getApellidos() +" Email: "+contacto.getEmail()+ " Teléfono: " + contacto.getTelefono();
+                Toast.makeText(MainActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        listaContactos.setAdapter(adaptadorContacto);
+        recyclerView.setAdapter(adaptador);
 
 
     }
